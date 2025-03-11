@@ -30,30 +30,45 @@ st.title("📈 Stock Price Prediction Dashboard")
 # Select stock ticker
 ticker = st.text_input("Enter stock ticker (e.g., AAPL, TSLA, GOOGL):", "AAPL")
 
-# Load and process data
-df = get_stock_data(ticker)
-scaler = MinMaxScaler(feature_range=(0, 1))
-df_scaled = scaler.fit_transform(df)
+# Exception handling block
+try:
+    # Fetch historical stock data
+    stock = yf.Ticker(ticker)
+    hist = stock.history(period="1y")
 
-# Prepare data for model
-sequence_length = 50
-X_test = create_sequences(df_scaled, sequence_length)
+    # Check if data was actually retrieved
+    if hist.empty:
+        raise ValueError("Invalid Ticker: No data found.")
 
-# Predict stock prices
-predicted_prices = model.predict(X_test)
-predicted_prices = scaler.inverse_transform(predicted_prices)
+    # Load and process data
+    df = get_stock_data(ticker)
+    scaler = MinMaxScaler(feature_range=(0, 1))
+    df_scaled = scaler.fit_transform(df)
 
-# Plot results
-st.subheader(f"{ticker} Stock Price Prediction")
-fig, ax = plt.subplots(figsize=(12, 6))
+    # Prepare data for model
+    sequence_length = 50
+    X_test = create_sequences(df_scaled, sequence_length)
 
-# Plot actual prices
-ax.plot(df.index[-len(predicted_prices):], df['Close'].iloc[-len(predicted_prices):], label="Actual Price", color="blue")
+    # Predict stock prices
+    predicted_prices = model.predict(X_test)
+    predicted_prices = scaler.inverse_transform(predicted_prices)
 
-# Plot predicted prices
-ax.plot(df.index[-len(predicted_prices):], predicted_prices, linestyle="dashed", label="Predicted Price", color="red")
+    # Plot results
+    st.subheader(f"{ticker} Stock Price Prediction")
+    fig, ax = plt.subplots(figsize=(12, 6))
 
-ax.set_xlabel("Date")
-ax.set_ylabel("Stock Price (USD)")
-ax.legend()
-st.pyplot(fig)
+    # Plot actual prices
+    ax.plot(df.index[-len(predicted_prices):], df['Close'].iloc[-len(predicted_prices):], label="Actual Price", color="blue")
+
+    # Plot predicted prices
+    ax.plot(df.index[-len(predicted_prices):], predicted_prices, linestyle="dashed", label="Predicted Price", color="red")
+
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Stock Price (USD)")
+    ax.legend()
+    st.pyplot(fig)
+
+except ValueError as e:
+    st.error(f"❌ {e}")
+except Exception as e:
+    st.error("⚠️ An unexpected error occurred. Please try another ticker.")
