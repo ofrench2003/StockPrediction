@@ -28,7 +28,7 @@ Different Python libraries are used to help develop this application, each with 
 
 ## **🚀Future Improvements**
 This application can be improved further in the future with help of others, but here are a few ideas that I will be working on:
- - **Error Handling** - currently the user can type in any string, causing the program to crash, adding this will stop the program crashing
+ - ~~**Error Handling** - currently the user can type in any string, causing the program to crash, adding this will stop the program crashing~~
  - **Improved Model Accuracy** - currently the model is quite accurate, but can be increased more with methods such as hyperparameter tuning
  - **Sentiment Analysis** - the movement of stocks is widely impacted by the mood of investors, adding this feature can increase accuracy even more.
 
